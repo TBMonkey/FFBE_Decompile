@@ -3,3 +3,5 @@
 
 ## Overview
 This repository is a place for me to park various components that I have discovered or reverse-engineered. Generally this is not going to be a full reverse-engineering of FFBE, but instead just piecewise elements that pique my interest.
+
+Notes on the client's server-facing API are in [`API_calls/`](API_calls/).
