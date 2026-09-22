@@ -7,6 +7,10 @@ anyone who wants to point the game at a server of their own.
   envelope, the eleven areas a server has to answer, and the full endpoint table (211 URLs).
 - **`boot_to_home_endpoints.md`**: the practical companion. The 15 endpoints the client actually
   touches between launch and a playable home screen, in order, with what each reply has to satisfy.
+- **`validated_endpoints.md`**: the next step past the home screen — the mission, summon, home-poll
+  and shop paths that have been driven against a live client, and what each reply has to carry.
+- **`finding_the_endpoints.md`**: the method. How the endpoint table is recovered from the client
+  binary, and how to watch a running client and pin a failure back to the call that caused it.
 - **`response_tag_map.json`**: 8-character response tag to response class, for making sense of the
   tags the client sends and expects.
 
@@ -34,6 +38,10 @@ DungeonResourceLoadMstListRequest
 ```
 
 On the home screen two more follow: `RoutineEventUpdateRequest` and `NoticeUpdateRequest`.
+
+Once the game is actually being played, the client reaches a further set of endpoints — mission
+start and end, the summon flow, the other routine polls, party edits and the shop. Those are walked
+through in `validated_endpoints.md`.
 
 `boot_to_home_endpoints.md` lists the request-ID, encode key and URL for each of these, and what the
 reply has to contain. The other ~195 endpoints in the contract table are reached later, from

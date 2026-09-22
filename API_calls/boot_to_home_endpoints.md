@@ -110,3 +110,8 @@ error. Once the server double-pads, the boot chain advances.
 The client retries an outstanding request about once a second while its connector is in an error state.
 A request the server never answers therefore shows up as a burst of identical requests rather than a
 single stalled one. Answering it is what stops the burst.
+
+## What comes after
+
+This note stops the moment the home screen is up. The screens beyond it — a mission, a summon, the
+recurring polls, the shop and the party edits — are the subject of `validated_endpoints.md`.

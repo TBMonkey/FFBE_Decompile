@@ -16,12 +16,17 @@ binary, and **222 request classes** resolve to them, so ten paths are shared by 
 Every request class exposes three tiny accessors that name its request-ID token, its encode key and its
 URL. Disassembling those three stubs recovers the whole endpoint table, which is in section 4.
 
-What is *not* recovered is the payload contract. The JSON field names are themselves 8-character
-obfuscated tokens, so a server can be routed to before it can be answered correctly. Section 3 lists
-what each area needs; section 5 lists what is still open.
+The payload contract is only partly recovered. The JSON field names are themselves 8-character
+obfuscated tokens, so a server can be routed to before it can be answered correctly. A handful of
+payloads have since been mapped end to end, but that map is not published here; the method for
+recovering the rest is in section 6. Section 3 lists what each area needs; section 5 lists what is
+still open.
 
-For the subset of endpoints that actually reaches the home screen, and the order the client sends
-them in, see `boot_to_home_endpoints.md`.
+This has not stayed a reading exercise. The client has been run in an emulator against a local
+server and driven well past static analysis: the boot chain completes, the opening mission plays, a
+summon pulls and awards units, and the home screen's polls are answered. For the endpoints that path
+actually touches, and what each reply has to satisfy, see `boot_to_home_endpoints.md` for the run
+from launch to the home screen and `validated_endpoints.md` for the screens beyond it.
 
 ## 1. Transport and route
 
@@ -109,7 +114,8 @@ storing it is not established (section 5).
 ## 3. Areas
 
 The client's server-facing behaviour groups into eleven areas. For each one: what the client does, and
-what a server has to supply.
+what a server has to supply. A subset of these has been driven against a live client and is walked
+request by request in `validated_endpoints.md`.
 
 ### 3.1 Auth, login and session
 
@@ -494,32 +500,36 @@ These are the open questions, stated so nobody mistakes them for settled facts.
 
 **No complete JSON schema.** Response field names are 8-character obfuscated tokens compared with
 `strcmp` inside each `*Response::readParam`. There are 496 of those parsers in the binary. A handful of
-payloads have been mapped end to end; the rest are recoverable by the same method but have not been
-done here. A server can be routed to before it can be answered correctly.
+payloads have been mapped end to end; the rest are recoverable by the same method but are not
+published. A server can be routed to before it can be answered correctly.
 
 **Signal key lifecycle.** The client receives a signal key from the server and stores it. When it is
 refreshed, whether every request needs it, and what relation it has to the encode key are all unknown.
 
-**Request-ID versus encode key.** Both are distinct 8-character tokens returned by separate accessors.
-Which one is a JSON field name and which is key material is not proven, although the encode key is
-confirmed to be the AES key in practice.
+**Request-ID versus encode key.** The encode key is settled: it is the AES key for both directions,
+confirmed against a live client. The request-ID is a separate token carried in the request envelope,
+and its role beyond identifying the action is not established.
 
 **Endpoint list completeness.** The 211 paths are the ones compiled as literals. A route could still be
 assembled at runtime from the URL dictionary or by string concatenation, so the list is not provably
 exhaustive.
 
-**Server authority.** Whether the server validates or recomputes battle stats, gacha results or
-currency, or simply echoes what the client sends, is unknown. The mission-end payload uploads a full
-stat history that looks auditable, but auditing is not proven.
+**Server authority.** This is now settled for two areas and open for the rest. Gacha is entirely
+server-authoritative: the client holds no rate or weight table, so the draw can only come from the
+server. Battle drops are the same shape — the client displays a candidate pool and discards the rate,
+so the roll has to happen server-side. Whether the original server audited the battle stat history the
+client uploads, or merely accepted it, is still unknown.
 
-**Version negotiation.** The rule that assigns the `Ver<N>` number to a table, and the set of tables
-that are mandatory at first boot, are not decoded.
+**Version negotiation.** The manifest row is understood: the server supplies a table name and a
+version, and the client builds the `Ver<N>_<token>` filename itself. The rule that assigns `<N>`, and
+the set of tables mandatory at first boot, are not decoded.
 
 **Login state machine.** The guest versus platform login paths and the two-factor flow were not traced.
 
-**One TLS residual.** An SDK helper that would install a global default socket factory exists but was
-not seen to be called anywhere reachable. If a runtime path reached it, it could bypass the default
-verification. Static reading cannot settle this, only a live run.
+**One TLS residual, not reached in practice.** An SDK helper that would install a global default socket
+factory exists but was not seen to be called anywhere reachable. Static reading cannot rule it out, but
+repeated live runs in a rooted emulator verify successfully against a CA in the system store, so no
+runtime path has reached it.
 
 ## 6. How the map was recovered
 
@@ -547,3 +557,14 @@ described rather than just the conclusion.
 Finally, the envelope was validated against a live client: requests decrypted, replies re-encrypted
 with the per-request key, and the double padding confirmed by the client accepting a double-padded
 reply and rejecting a single-padded one.
+
+The payload maps come from the same tooling, one parser at a time. A response class reads its body in
+`*Response::readParam`, which compares the incoming field name against its 8-character token and then
+branches to the store for that field. Reading the comparison and its branch target gives the token and
+the field offset; the sibling `*Mst` struct's own `set*` accessors give the human name for that
+offset. Join the two and a token map falls out. Which fields actually matter on a given screen is then
+a question for a live run, because most reply handlers clear their target object before reading.
+
+`finding_the_endpoints.md` is the platform-neutral write-up of both halves: reading this table out of
+a client build, and watching a running client so a screen that will not advance can be pinned to the
+call that caused it.
