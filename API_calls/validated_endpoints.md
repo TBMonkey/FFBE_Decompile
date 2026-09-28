@@ -103,6 +103,10 @@ a miss there surfaces as the client's generic "a connection error has occurred" 
 missing image. In our first run with a large generated catalogue, a handful of 404s on filenames
 containing spaces read for a while as a broken network path, not as an asset problem.
 
+The banner layer's internals are the subject of `gacha_endpoints.md`: which response groups build a
+banner, how its tabs and buttons are chosen, and which parts a server has to author because they were
+never in the APK.
+
 ## The home screen's recurring polls
 
 Once the home screen is up, a small set of requests repeats on a timer. Their replies are trivial, and

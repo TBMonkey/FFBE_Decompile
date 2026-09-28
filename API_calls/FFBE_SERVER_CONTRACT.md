@@ -211,7 +211,9 @@ and neither table shipped in the APK, so the rates shown in game were rendering 
 is therefore the RNG of record for this area.
 
 A server needs to supply banner, step and box state, and for each pull the drawn unit ids plus the
-resulting unit records.
+resulting unit records. The banner layer reaches the client in reply bodies rather than as a downloaded
+table, and most of its content has to be authored; `gacha_endpoints.md` covers that channel and the
+object graph the client expects.
 
 ### 3.7 Shop, IAP and premium currency
 

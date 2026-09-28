@@ -9,6 +9,8 @@ anyone who wants to point the game at a server of their own.
   touches between launch and a playable home screen, in order, with what each reply has to satisfy.
 - **`validated_endpoints.md`**: the next step past the home screen — the mission, summon, home-poll
   and shop paths that have been driven against a live client, and what each reply has to carry.
+- **`gacha_endpoints.md`**: the summon system in depth — how a banner actually reaches the client,
+  the response groups behind it, and what a server has to author because it never shipped.
 - **`finding_the_endpoints.md`**: the method. How the endpoint table is recovered from the client
   binary, and how to watch a running client and pin a failure back to the call that caused it.
 - **`response_tag_map.json`**: 8-character response tag to response class, for making sense of the
