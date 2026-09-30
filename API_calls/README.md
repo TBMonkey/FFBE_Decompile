@@ -11,6 +11,11 @@ anyone who wants to point the game at a server of their own.
   and shop paths that have been driven against a live client, and what each reply has to carry.
 - **`gacha_endpoints.md`**: the summon system in depth — how a banner actually reaches the client,
   the response groups behind it, and what a server has to author because it never shipped.
+- **`towns_and_maps_endpoints.md`**: the town transition requests and the per-location pack delivery
+  behind a town or a field — what the replies have to satisfy, how the client decides which packs to
+  fetch, and how a missing pack fails.
+- **`missing_cdn_packs.md`**: the packs the client asks for that no build we can compare against
+  contains, with exact CDN paths — and what a useful copy of the game would look like.
 - **`finding_the_endpoints.md`**: the method. How the endpoint table is recovered from the client
   binary, and how to watch a running client and pin a failure back to the call that caused it.
 - **`response_tag_map.json`**: 8-character response tag to response class, for making sense of the
@@ -51,7 +56,8 @@ individual screens and actions (battle, gacha, shop, friends), not on the boot p
 
 Beyond the `actionSymbol` calls there is a second axis: the client downloads versioned master-data
 tables and resource packs from a host the server configures. A server has to serve those too, or the
-client will not finish loading.
+client will not finish loading. Map and town content is fetched **per location**, on demand; the packs
+with no known source are listed in `missing_cdn_packs.md`.
 
 ## Three things that will bite you
 

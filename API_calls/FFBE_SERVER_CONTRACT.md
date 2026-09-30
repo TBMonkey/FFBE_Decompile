@@ -260,6 +260,29 @@ events to a set of SDKs, each on its own host. A server has to answer the report
 and ignoring is probably enough, though this is not verified) and can ignore the SDK backends, since
 they are distinct hosts.
 
+### 3.11 Towns, maps and exploration
+
+The client enters a town, moves through it and leaves it with three small requests — `TownInRequest`,
+`TownOutRequest` and `TownUpdateRequest` — plus a map-side update, `MissionUpdateRequest`, fired by the
+map scripts. None of them is answered with content: there is no town-state response class, so the reply
+only has to be a valid one. The scene's connect check consumes it, and without any reply the client
+shows its generic connection error. The ordinary account record satisfies all four.
+
+What fills a map or a town is downloaded, not served in a reply. The client fetches a CPK pack per
+location on demand from the CDN host the boot reply configures, by a name it builds from its own
+resource tables; the pack carries the map's script and dialogue. A requested pack that is missing is
+fatal to the location — the client raises the same generic connection error and the scene does not load
+— so a server has to return valid bytes for every path the client asks for, or hold the story switches
+that make the request. The packs did not ship with the APK, and the live-service families are absent
+from the offline builds we can compare against: `missing_cdn_packs.md` lists them.
+
+`towns_and_maps_endpoints.md` has the request table, the reply requirements, the URL shape, the
+download/ignore gate and the pack contents.
+
+Notable classes: `TownInRequest`, `TownOutRequest`, `TownUpdateRequest`, `MissionUpdateRequest`,
+`EnterTownScene`, `ExitTownScene`, `TownSystemScene`, `MapScene`, `MapDrawManager`,
+`DownloadSequencePopup`, `ResourceVersionMstResponse`, `MapResourceVersionResponse`.
+
 ## 4. Endpoint appendix
 
 Every request class in the shipped binary, with the request-ID token, the encode key and the URL it
