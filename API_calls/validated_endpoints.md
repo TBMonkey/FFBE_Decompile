@@ -64,6 +64,34 @@ a counter that begins at one, so the ladder has to be contiguous from 1 — a ga
 the mission as over. And the failure mode for an empty or all-skipped formation is not an error: it is
 the same immediate end, which is easy to mistake for a scene-routing problem.
 
+### What that content has to carry
+
+The groups this reply hands over are not just stats. Four things in them are load-bearing, and each one
+fails quietly or loudly in its own way.
+
+**A monster's parts are several rows.** One monster's body and limbs are separate rows that share the
+monster id and differ in a parts number — 1 is the body, 2 and up are the limbs. The client builds one
+battle unit per row, so serving only the first row gives a multi-limb enemy a single limb. Read every
+row that shares the id.
+
+**Every skill a part names has to be in the reply.** A part carries a skill set, and the client resolves
+each id in it against the monster-skill rows in the same reply. A missing row is not an error: the client
+skips that skill. A monster whose whole list is missing degrades to a plain attack, which looks like an
+AI problem and is not one.
+
+**The break groups are mandatory as soon as a part names a break id.** A part with a non-zero break id
+makes the client look up two further groups — the broken form's stats and the break gauge. It null-checks
+neither, so a part that names a break id while those groups are absent faults at battle load. Send both,
+or name break id 0 and the client skips the path entirely. Inside the gauge group, one field is a fixed
+**sixteen-entry** comma-delimited list of per-weapon values, read on every attack: it is not optional
+either, and an empty one faults on the first hit. The same group's fields set the gauge pool again after
+the first break, which is how a fight can have a larger pool the second time.
+
+**The behaviour is not yours to send.** An enemy's turn-by-turn script ships inside the client as its own
+table; the parts row carries the id that selects it. The server supplies that id and the skills the
+script indexes, nothing more — so "the boss did nothing" is either a scripted turn or a skill list that
+falls short of what the script asks for.
+
 The last request is `MissionEndRequest`, and its reply is the result screen. That response class binds
 to the client's own result object and clears it before reading, so gil, experience, drops and reward
 rows exist only if the reply carries them. An empty reply is an empty result screen. The mission's

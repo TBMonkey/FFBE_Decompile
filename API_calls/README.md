@@ -8,14 +8,17 @@ anyone who wants to point the game at a server of their own.
 - **`boot_to_home_endpoints.md`**: the practical companion. The 15 endpoints the client actually
   touches between launch and a playable home screen, in order, with what each reply has to satisfy.
 - **`validated_endpoints.md`**: the next step past the home screen — the mission, summon, home-poll
-  and shop paths that have been driven against a live client, and what each reply has to carry.
+  and shop paths that have been driven against a live client, what each reply has to carry, and the four
+  things a battle reply gets wrong by omission (monster parts, skills, the break groups, and the fact
+  that the enemy's behaviour is not yours to send).
 - **`gacha_endpoints.md`**: the summon system in depth — how a banner actually reaches the client,
   the response groups behind it, and what a server has to author because it never shipped.
 - **`towns_and_maps_endpoints.md`**: the town transition requests and the per-location pack delivery
   behind a town or a field — what the replies have to satisfy, how the client decides which packs to
   fetch, and how a missing pack fails.
 - **`missing_cdn_packs.md`**: the packs the client asks for that no build we can compare against
-  contains, with exact CDN paths — and what a useful copy of the game would look like.
+  contains, with exact CDN paths, what the JP dump did and did not close, and what a useful copy of the
+  game would look like.
 - **`finding_the_endpoints.md`**: the method. How the endpoint table is recovered from the client
   binary, and how to watch a running client and pin a failure back to the call that caused it.
 - **`response_tag_map.json`**: 8-character response tag to response class, for making sense of the

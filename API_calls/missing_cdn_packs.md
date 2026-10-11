@@ -45,12 +45,34 @@ first five names in each family:
 * `map/SP4` (1): `Ver13_700010400.cpk`
 * `sound/bgm` (7): `Ver1_bgm_FFBE_FF_110_FINALMIX_KS_WIP1_01.acb`, `Ver1_bgm_FFBE_FF_202_FINALMIX_KS_WIP2.acb`, `Ver1_bgm_FFBE_FF_204_FINALMIX_KS_WIP2.acb`, `Ver2_bgm_DeusEX_Opening_Credits.acb`, `Ver2_bgm_JustCause_Direvello_Suite.acb` …(+2)
 
+### What the 57 look like after the JP fill
+
+**`event/SG` + `map/SG` (41).** Global-only. The JP catalogue has no `event/SG`/`map/SG` directory at
+all, and the JP mission table does not carry the digest mission ids (`6100101xx`, `90007xx`, `90017xx`,
+`90020xx`, `9000001`), so there is no JP pack to fetch or rename. A Global install that played Story
+Digest is the likely source.
+
+**`event/SP4` + `map/SP4` (9).** The JP package does contain SP4 files, but they are the ids we already
+hold — `700010406.cpk` is byte-identical to ours — and the Global-missing ids (`700010304`–`306`,
+`700010400`–`405`) are not in it. JP's own `map/SP4` is a different event numbering (`4021101xx`), so it
+cannot be mapped across. One partial: three of the missing scripts sit *inside* packs we do hold
+(`700010304_event.bin` in `Ver5_700010406.cpk`, `305` in `Ver4_700010407.cpk`, `306` in
+`Ver4_700010408.cpk`), so those three are rebuildable from held files — their text and teller members
+are not.
+
+**`sound/bgm` (7).** The JP package carries the same music under different resource names — e.g.
+`la791_bgm_law_FF_202_FINAL_MIX_KS_WIP2.acb` beside the missing `FF_202` cue, and a piano variant of
+`Immortal_Flame` — so two or three of the seven are fillable by content match and rename. The Deus EX and
+Just Cause cues are Global-only collaborations with no JP counterpart.
+
 ## How to help
 
-The remaining ask is narrow: the **Story Digest** content (`event/SG` + `map/SG`, 41 packs — absent from
-Square's JP AndApp package as well), the `70001030x`/`70001040x` event-dungeon group (9 packs), and seven
-collab BGM tracks (FF, Deus EX, Just Cause, KP, Touch It). A copy from a Global client that played Story
-Digest is the likely source for the first group.
+The remaining ask is narrow, and the three groups are not equally hard. The **Story Digest** content
+(`event/SG` + `map/SG`, 41 packs) is the one that genuinely needs a Global install that played it — it is
+absent from Square's JP package as well. Of the `70001030x`/`70001040x` event-dungeon group, three packs
+are rebuildable from files we already hold and six are unaccounted for. Of the seven BGM cues, two or
+three can be matched from the JP package's alternate names (a Touch It remix, an FF sibling mix, a piano
+variant); at least the Deus EX and Just Cause cues are Global-only collaborations with no JP counterpart.
 
 A copy is useful if it contains any of the families above. The pack files are content only — they contain
 no account credentials. Do not send account data (the `shared_prefs` directory and any login material)
