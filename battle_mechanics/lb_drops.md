@@ -76,7 +76,7 @@ is a hard cap of **20** drops per enemy per battle.
 
 So the number of crystals one enemy will ever produce is
 
-$$N = \min(\mathrm{lb\_drop\_limit},\ 20).$$
+$$N = \min(\mathrm{lb\\_drop\\_limit},\ 20).$$
 
 Two enemies with identical stats can behave completely differently here, purely because their data says so.
 And your +crystal-drop passives can't make a stingy enemy generous — they only help you *empty its wallet
