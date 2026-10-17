@@ -196,6 +196,15 @@ A server needs to admit missions, accept the end payload and return rewards and 
 info, and answer the continue, retire and restart calls. Whether the server validates or recomputes
 the uploaded stats, or just accepts them, is not established.
 
+Two competitive families hang off the same machinery. The arena (`Rb*`) has its own entry, matching,
+start, end, restart, ranking and trade-board requests; the Colosseum (`Clsm*`) has entry, start, end and
+lottery. Both are reached by a door request answered with an acknowledgement and then build their
+screens from state delivered earlier. Their orbs — four point/maximum/countdown triples, one per mode —
+ride the team-info reply, and the arena's ranking screen builds one orb button per orb up to the cap it
+is served, so a cap larger than the ten the client's layout ships faults the scene. The Colosseum's
+entry is an acknowledgement, but the screen it hands off to reads a battle-info class that has to ride
+the same reply. `arena_and_colosseum_endpoints.md` has both failure modes.
+
 Notable classes: `MissionStartRequest`, `MissionEndRequest`, `MissionResultResponse`,
 `MissionResumeInfoResponse`, `BattleScene`, `BattleManager`, plus the survival, colosseum and
 TFA mission variants.
@@ -239,6 +248,21 @@ lists and read state, and home-marquee banner URLs. It also needs to answer the 
 (`F_URL_MST` / `EnvUrlMst`): the server pushes `P_GS_*` overrides that steer the CDN, notice and banner
 hosts. This is the intended hook for repointing a reconstruction at your own infrastructure.
 
+The reinforcement list is the battle-helper list. Its rows ride `ReinforcementResponse`, which binds a
+carrying tag and a clearing tag, and an empty list is accepted; a populated row has to be built from
+that class's own field names, or the support-select layout faults on the fields it never received. The
+friends list (`FriendUnitInfoResponse`) is optional display data whose populated shape is unverified —
+an empty list renders. `support_and_friends_endpoints.md` covers both, the vision-card class the support
+row resolves through, and the espers that ride any player-state reply.
+
+Events are opened through a gate list delivered in reply bodies (`SpDungeonCondMstResponse`, tag
+`0xkoNP8U`), which is replace-on-read: the area, its dungeon and its first mission can be derived from
+the shipped mission tables, while the window, the tab and the art are authored. A tile's art and an
+event's maps arrive as per-location packs, not in replies, fetched by name from the client's own
+resource tables. Of the 913 event areas with at least three missions, 707 have fully battle-derivable
+content from the client-side JP corpus. The crest screens, the emblem campaign and the story switches
+that open feature tiles are the rest of this area; `events_and_unlocks_endpoints.md` has all three.
+
 Notable classes: `FriendListRequest`, `FriendDetailRequest`, `GetReinforcementInfoRequest`,
 `RoutineHomeUpdateRequest`, `RoutineEventUpdateRequest`, `NoticeUpdateRequest`, `NoticeMstResponse`,
 `sgHomeMarqueeInfoRequest`.
@@ -277,7 +301,8 @@ that make the request. The packs did not ship with the APK, and the live-service
 from the offline builds we can compare against: `missing_cdn_packs.md` lists them.
 
 `towns_and_maps_endpoints.md` has the request table, the reply requirements, the URL shape, the
-download/ignore gate and the pack contents.
+download/ignore gate and the pack contents. Event areas are delivered the same way; the gate list they
+appear in is covered in `events_and_unlocks_endpoints.md`.
 
 Notable classes: `TownInRequest`, `TownOutRequest`, `TownUpdateRequest`, `MissionUpdateRequest`,
 `EnterTownScene`, `ExitTownScene`, `TownSystemScene`, `MapScene`, `MapDrawManager`,
@@ -543,7 +568,14 @@ exhaustive.
 server-authoritative: the client holds no rate or weight table, so the draw can only come from the
 server. Battle drops are the same shape — the client displays a candidate pool and discards the rate,
 so the roll has to happen server-side. Whether the original server audited the battle stat history the
-client uploads, or merely accepted it, is still unknown.
+client uploads, or merely accepted it, is still unknown. Feature switches are a third: several tiles
+are gated by the function table and no shipped row grants the bits, so the server is the only source of
+that progression.
+
+**The modes past the home screen.** The arena, Colosseum, support and emblem paths are routed and their
+entry replies are understood, but the screens behind them have not been driven end to end: whether the
+emblem campaign's three groups are consumed on their own request, and whether zero-valued Colosseum
+battle info is safe, are both open.
 
 **Version negotiation.** The manifest row is understood: the server supplies a table name and a
 version, and the client builds the `Ver<N>_<token>` filename itself. The rule that assigns `<N>`, and

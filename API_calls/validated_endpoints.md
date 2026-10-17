@@ -7,7 +7,8 @@ that carry the client from launch to a playable home screen.
 This note is the next step. It lists the requests a client sends once the home screen is up and the
 game is actually being played — a mission, a summon, the recurring home polls — in the order the
 client sends them, and says what each reply has to carry. Everything here was driven against a local
-server: the client sent the request in a captured run and accepted the answer.
+server — the client sent the request in a captured run and accepted the answer — except where a
+section says an effect is still unproven.
 
 It deliberately stops short of the field level. A response body is a JSON object whose keys are
 eight-character tokens, and those token maps are the part left to you. Recovering one is mechanical —
@@ -34,6 +35,11 @@ requests and the shape of each answer without handing over the answer itself.
 | shop | `PurchaseSettingRequest` | `QkwU4aD9` | `ePFcMX53` | `9hUtW0F8.php` | `UserPurchaseInfoResponse` |
 | shop | `PurchaseListRequest` | `BT28S96F` | `X3Csghu0` | `YqZ6Qc1z.php` | `UserPurchaseListInfoResponse` |
 | mail | `MailListRequest` | `KQHpi0D7` | `7kgsrGQ1` | `u3E8hpad.php` | `UserMailInfoResponse` |
+| arena | `RbEntryRequest` | `f8kXGWy0` | `EA5amS29` | `30inL7I6.php` | `OpeRbInfoResponse` |
+| Colosseum | `ClsmEntryRequest` | `5g0vWZFq` | `8bmHF3Cz` | `UmLwv56W.php` | `UserClsmInfoResponse` |
+| emblem | `PlayerEmblemEntryRequest` | `Z7J9H6TK` | `F7A2MJoE` | `huKNdci6.php` | `UserPlayerEmblemInfoResponse` |
+| emblem | `PlayerEmblemSettingRequest` | `19YwqU2T` | `76kGLIgN` | `cswGxj8F.php` | `UserPlayerEmblemInfoResponse` |
+| emblem | `sgEmblemEventRequest` | `wMWvnYDR` | `U9QMZrFq` | `wMWvnYDR.php` | the three campaign classes (see the events note) |
 
 The request-ID, encode key and URL token are the three values recovered from each class's own
 accessors, and they match the contract's appendix. The reply column names the response class whose
@@ -157,8 +163,8 @@ response class, so a reply that carries two of them runs the class's callback tw
 
 The edit requests in this group are mostly echoes: the client sends a party-deck edit or a unit-equip
 and expects an acknowledgement, and replying with the account record alone is accepted. The unit-equip
-family also has an optional equip group, but its response tag is one of the few the extractor could
-not resolve by the standard method, so treat its exact form as unrecovered.
+family also has an optional equip group; its reply class is `UnitEquipResponse`, which the factory
+binds to eighteen tags, and the one our equip edits are answered with is `TJ9eL80N`.
 
 What actually matters is state that has to be right before the edit. The active party id in the
 account reply has to name a deck that exists in the same reply; a deck under one id and an active id
@@ -172,6 +178,10 @@ replies clear their target list before adding to it, so replying with an empty l
 "leave the old list alone" — it means an empty list. That distinction matters anywhere a list is
 already populated.
 
+The friend-list rows themselves are a separate caution: every field that response class reads is
+optional display data with no verified reader, and populating the list faulted the friends scene in our
+runs, so an empty list is the working answer there too. `support_and_friends_endpoints.md` has it.
+
 ## The shop
 
 Entering the shop sends `PurchaseSettingRequest`, and its reply is where the age gate opens. The
@@ -182,6 +192,28 @@ request sent lands in the wrong object. Answer the setting response's own tag, n
 
 `PurchaseListRequest` follows, and an empty list makes the shop render bare but working. Populating it
 leads into the Play billing path, which is a build-and-platform problem rather than a server one.
+
+## The support list, the arena and the emblem paths
+
+Three further flows have been driven since this note's first version, each with its own note.
+
+The **support list** — the units a battle can borrow — rides the `GetReinforcementInfoRequest` reply
+rather than a screen request of its own. Its response class binds two tags, one that carries rows and
+one that clears them, and an empty list is accepted. The caution is in the rows: they have to be built
+from that response class's own field names, and a row built from a neighbouring class's set faults the
+support-select layout. `support_and_friends_endpoints.md` has the row, the vision-card class it depends
+on, and the espers that ride the same state.
+
+The **arena's door** (`RbEntryRequest`) and the **Colosseum's** (`ClsmEntryRequest`) are
+acknowledgements, but the screens they open read state delivered earlier. The arena's ranking screen
+draws one orb button per orb up to the cap it was served, so a cap larger than the client's ten
+laid-out buttons crashes it, and the orb values themselves ride the team-info reply.
+`arena_and_colosseum_endpoints.md` has both failure modes and the four orb families.
+
+The **emblem screens** are an entry request that returns the owned list and a setting request that
+names the crest to display, with the campaign behind `sgEmblemEventRequest`.
+`events_and_unlocks_endpoints.md` covers them, the event gate list and the story switches that open
+locked feature tiles.
 
 ## Where the field maps are not
 

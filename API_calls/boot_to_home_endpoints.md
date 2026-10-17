@@ -59,7 +59,10 @@ stood between the login flow and a working home screen in testing.
 **7 and 8. `GetUserInfo2Request` and `GetUserInfo3Request`** are follow-ups for additional account
 sections. A minimal user-info echo satisfies them.
 
-**9. `GetReinforcementInfoRequest`** fetches home reinforcement data.
+**9. `GetReinforcementInfoRequest`** fetches the borrowable-helper list. Its rows ride
+`ReinforcementResponse`, which binds two tags — one carries the list and one clears it — and an empty
+list is accepted: the home screen renders and a battle simply has no helper to offer. The row rules are
+in `support_and_friends_endpoints.md`.
 
 **10. `sgHomeMarqueeInfoRequest`** fetches the scrolling home banners. An empty banner list is safe and
 renders as nothing.
